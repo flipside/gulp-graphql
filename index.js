@@ -3,21 +3,31 @@ var gutil = require('gulp-util');
 var through = require('through2');
 var defaults = require('lodash.defaults');
 
-var _graphql, _introspectionQuery, _printSchema;
+var graphql, introspectionQuery, printSchema;
 
-// set local references for graphql stuff
-generate.init = function (graphql, introspectionQuery, printSchema) {
-  _graphql = graphql && (graphql.graphql || graphql);
-  _introspectionQuery = introspectionQuery;
-  _printSchema = printSchema;
-}
+// loads graphql via absolute path to base directory
+var loadGraphql = function (dirname, options) {
+  var src = options.graphqlPath || (dirname + '/node_modules/graphql');
+  // console.log(src);
 
-function generate (opts) {
-
-  if (!_graphql || !_introspectionQuery || !_printSchema) {
-    throw new gutil.PluginError('gulp-graphql',
-      'Missing init(graphql, introspectionQuery, printSchema)');
+  try {
+    graphql = require(src).graphql;
+    var graphqlUtil = require(src + '/utilities');
+    introspectionQuery = graphqlUtil.introspectionQuery;
+    printSchema = graphqlUtil.printSchema;
+  } catch (err) {
+    throw new gutil.PluginError('gulp-graphql', err, {
+      message: 'failed to load graphql from ' + src
+    });
   }
+
+  if (!graphql || !introspectionQuery || !printSchema) {
+    throw new gutil.PluginError('gulp-graphql',
+      'failed to load graphql from ' + src);
+  }
+};
+
+module.exports = function (opts) {
 
   var options = defaults({}, opts, {
     json: true,
@@ -39,15 +49,19 @@ function generate (opts) {
       return;
     }
 
+    if (!graphql && file.cwd) {
+      loadGraphql(file.cwd, options);
+    }
+
     var Schema;
 
     try {
       // delete the schema if it has be loaded previously
       delete require.cache[file.path];
       // require the schema using the file path
-      var schema = require(file.path);
+      var _schema = require(file.path);
       // check if the schema is located on a property
-      Schema = schema.Schema || schema.schema || schema;
+      Schema = _schema.Schema || _schema.schema || _schema;
     } catch (err) {
       this.emit('error',
         new gutil.PluginError('gulp-graphql', err, {
@@ -62,7 +76,7 @@ function generate (opts) {
       var self = this;
       if (options.graphql) {
         try {
-          var printedSchema = _printSchema(Schema);
+          var printedSchema = printSchema(Schema);
           if (printedSchema) {
             var printFile = new gutil.File({
               path: options.fileName + '.graphql',
@@ -88,7 +102,7 @@ function generate (opts) {
       }
 
       if (options.json) {
-        _graphql(Schema, _introspectionQuery).then(function (result) {
+        graphql(Schema, introspectionQuery).then(function (result) {
           if (result.errors) {
             self.emit('error',
               new gutil.PluginError('gulp-graphql', result.errors[0], {
@@ -124,5 +138,3 @@ function generate (opts) {
     }
   });
 };
-
-module.exports = generate;

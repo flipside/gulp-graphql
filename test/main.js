@@ -8,30 +8,16 @@ var gutil = require('gulp-util');
 var should = require('should');
 var File = gutil.File;
 
+// loading these here prevents a global leak for some reason
 var graphql = require('graphql').graphql;
 var graphqlUtil = require('graphql/utilities');
-var introspectionQuery = graphqlUtil.introspectionQuery;
-var printSchema = graphqlUtil.printSchema;
 
-var schemaFile = './test/data/schema.js';
-var badFile = './test/data/bad.js';
-var badSchemaFile = './test/data/database.js';
-
-function init () {
-  graphqlPlugin.init(graphql, introspectionQuery, printSchema);
-}
+var schemaFileSrc = './test/data/schema.js';
+var badFileSrc = './test/data/bad.js';
+var badSchemaFileSrc = './test/data/database.js';
 
 describe('gulp-graphql', function () {
   describe('graphqlPlugin()', function () {
-    it('should throw an error if not initialized', function (done) {
-      (graphqlPlugin).should.throwError();
-      done();
-    });
-
-    it('should accept initialization paramaters', function (done) {
-      (init).should.not.throw();
-      done();
-    });
 
     it('should not throw when initialized', function (done) {
       (graphqlPlugin).should.not.throw();
@@ -39,7 +25,7 @@ describe('gulp-graphql', function () {
     });
 
     it('should find the the schema file by src', function (done) {
-      gulp.src(schemaFile)
+      gulp.src(schemaFileSrc)
         .pipe(assert.length(1))
         .pipe(assert.all(function(file) {
           (file.isStream()).should.be.false;
@@ -51,7 +37,7 @@ describe('gulp-graphql', function () {
     });
 
     it('should accept options to only generate a schema.json', function (done) {
-      gulp.src(schemaFile)
+      gulp.src(schemaFileSrc)
         .pipe(graphqlPlugin({
           json: true,
           graphql: false,
@@ -62,15 +48,15 @@ describe('gulp-graphql', function () {
           (file.isStream()).should.be.false;
           (file.extname).should.equal('.json');
           (file.basename).should.equal('schema.json');
-          var schema = JSON.parse(file.contents.toString());
-          (schema).should.be.an.Object;
-          (schema).should.have.keys('data');
+          var jsonSchema = JSON.parse(file.contents.toString());
+          (jsonSchema).should.be.an.Object;
+          (jsonSchema).should.have.keys('data');
         }))
         .on('end', done);
     });
 
     it('should accept options to only generate a schema.graphql', function (done) {
-      gulp.src(schemaFile)
+      gulp.src(schemaFileSrc)
         .pipe(graphqlPlugin({
           grpahql: true,
           json: false,
@@ -86,7 +72,7 @@ describe('gulp-graphql', function () {
     });
 
     it('should output 2 files by default', function (done) {
-      gulp.src(schemaFile)
+      gulp.src(schemaFileSrc)
         .pipe(graphqlPlugin())
         .pipe(assert.length(2))
         .pipe(assert.first(function(file) {
@@ -106,7 +92,7 @@ describe('gulp-graphql', function () {
     });
 
     it('should emit an error on invalid file src', function (done) {
-      gulp.src(badFile)
+      gulp.src(badFileSrc)
         .pipe(graphqlPlugin())
         .on('error', function (err) {
           err.message.should.equal('Unable to load schema file');
@@ -115,7 +101,7 @@ describe('gulp-graphql', function () {
     });
 
     it('should emit an error on invalid schema file', function (done) {
-      gulp.src(badSchemaFile)
+      gulp.src(badSchemaFileSrc)
         .pipe(graphqlPlugin())
         .on('error', function (err) {
           err.message.should.equal('Invalid schema file');
