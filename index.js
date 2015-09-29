@@ -20,11 +20,13 @@ function generate (opts) {
   }
 
   var options = defaults({}, opts, {
-    generateSchema: true,
-    printSchema: true,
+    json: true,
+    graphql: true,
     indentation: 2,
     fileName: 'schema',
   });
+
+  // console.log(options);
 
   return through.obj(function (file, enc, cb) {
     if (file.isNull()) {
@@ -58,7 +60,7 @@ function generate (opts) {
     }
     if (Schema) {
       var self = this;
-      if (options.printSchema) {
+      if (options.graphql) {
         try {
           var printedSchema = _printSchema(Schema);
           if (printedSchema) {
@@ -67,12 +69,12 @@ function generate (opts) {
               contents: new Buffer(printedSchema),
             });
             self.push(printFile);
-            if (!options.generateSchema) {
+            if (!options.json) {
               return cb();
             }
           }
         } catch (err) {
-          if (!options.generateSchema) {
+          if (!options.json) {
             this.emit('error',
               new gutil.PluginError('gulp-graphql', err, {
                 fileName: file.path,
@@ -85,12 +87,13 @@ function generate (opts) {
         }
       }
 
-      if (options.generateSchema) {
+      if (options.json) {
         _graphql(Schema, _introspectionQuery).then(function (result) {
           if (result.errors) {
             self.emit('error',
               new gutil.PluginError('gulp-graphql', result.errors[0], {
                 fileName: file.path,
+                message: 'Invalid schema file',
                 showProperties: false
               })
             );

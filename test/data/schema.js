@@ -11,7 +11,6 @@ var connectionArgs = GraphQLRelay.connectionArgs,
     connectionFromArray = GraphQLRelay.connectionFromArray,
     fromGlobalId = GraphQLRelay.fromGlobalId,
     globalIdField = GraphQLRelay.globalIdField,
-    mutationWithClientMutationId = GraphQLRelay.mutationWithClientMutationId,
     nodeDefinitions = GraphQLRelay.nodeDefinitions;
 
 var Widget = db.Widget,
@@ -19,7 +18,7 @@ var Widget = db.Widget,
     getUser = db.getUser,
     getWidget = db.getWidget,
     getWidgetsByUser = db.getWidgetsByUser,
-    getAnonymousUser = db.getAnonymousUser;
+    getViewer = db.getViewer;
 
 
 var nodeDefinitions = nodeDefinitions(function (globalId) {
@@ -52,7 +51,7 @@ var widgetType = new GraphQLObjectType({
     },
   },
   interfaces: [nodeDefinitions.nodeInterface],
-})
+});
 
 var userType = new GraphQLObjectType({
   name: 'User',
@@ -75,7 +74,7 @@ var userType = new GraphQLObjectType({
     }
   },
   interfaces: [nodeDefinitions.nodeInterface],
-})
+});
 
 var WidgetConnection = connectionDefinitions(
   {
@@ -88,10 +87,10 @@ var queryType = new GraphQLObjectType({
   name: 'Query',
   fields: {
     node: nodeDefinitions.nodeField,
-    user: {
+    viewer: {
       type: userType,
       resolve: function () {
-        return getAnonymousUser();
+        return getViewer();
       },
     },
   },

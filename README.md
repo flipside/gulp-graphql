@@ -26,14 +26,17 @@ gulp.task("schema", () => {
   console.log("Generating graphql schema...");
 
   return gulp.src("src/data/schema.js")
-    .pipe(gulpGraphql())
+    .pipe(gulpGraphql({
+      json: true,
+      graphql: false,
+    }))
     .on('error', console.log)
     .pipe(gulp.dest("src/data"))
     .pipe(gulp.dest("dist/data"));
 });
 
 gulp.task('watch-schema', () => {
-  gulp.watch(serverSchemaFolder, [ 'schema' ]);
+  gulp.watch("src/data/schema.js", [ 'schema' ]);
 });
 
 gulp.task("default", ["schema"]);
@@ -41,10 +44,10 @@ gulp.task("default", ["schema"]);
 ```
 
 ## Options
-* `printSchema` (optional) (default: `true`)
-	* Output a readable of `schema.graphql` file
-* `generateSchema` (optional) (default: `true`)
+* `json` (optional) (default: `true`)
 	* Generate a graphql schema from your `schema.js` and output to `schema.json`
+* `graphql` (optional) (default: `true`)
+	* Output schema as a readable `schema.graphql` file
 * `fileName` (optional) (default: `schema`)
 	* Base name for your schema file, no extension
 * `indentation` (optional) (default: `2`)

@@ -21,9 +21,10 @@
   "devDependencies": {
     "graphql": "^0.4.4",
     "graphql-relay": "^0.3.2",
-    "gulp": "~3.9.x",
+    "gulp": "^3.9.0",
     "mocha": "^2.3.3",
-    "should": "^7.1.0"
+    "should": "^7.1.0",
+    "stream-assert-gulp": "^0.4.9"
   },
   "dependencies": {
     "gulp-util": "^3.0.6",
