@@ -1,0 +1,33 @@
+{
+  "name": "gulp-graphql",
+  "version": "0.1.0",
+  "description": "Keep your graphql schema up-to-date with gulp!",
+  "homepage": "http://github.com/flipside/gulp-graphql",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/flipside/gulp-graphql.git"
+  },
+  "bugs": "https://github.com/flipside/gulp-graphql/issues",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "gulpplugin",
+    "graphql"
+  ],
+  "author": "Mat Tyndall <mat@tinj.com> (http://tinj.com/)",
+  "license": "MIT",
+  "devDependencies": {
+    "graphql": "^0.4.4",
+    "graphql-relay": "^0.3.2",
+    "gulp": "~3.9.x",
+    "mocha": "^2.3.3",
+    "should": "^7.1.0"
+  },
+  "dependencies": {
+    "gulp-util": "^3.0.6",
+    "lodash.defaults": "^3.1.2",
+    "through2": "^2.0.0"
+  }
+}
