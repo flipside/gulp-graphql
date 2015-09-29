@@ -1,6 +1,6 @@
 {
   "name": "gulp-graphql",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Keep your graphql schema up-to-date with gulp!",
   "homepage": "http://github.com/flipside/gulp-graphql",
   "repository": {
