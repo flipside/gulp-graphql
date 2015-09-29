@@ -5,7 +5,7 @@
 ## Features
 * Attempts to generate a graphql schema from `schema.js`
 * Can output both `schema.json` and `schema.graphql`
-* You MUST pass in graphql, introspectionQuery, and printSchema via `gulpGraphql.init`
+* You MUST pass in `graphql`, `introspectionQuery`, and `printSchema` via `.init()`
 
 ## Installation
 ```shell
@@ -17,16 +17,17 @@ Example `gulpfile.babel.js`:
 import gulp from 'gulp';
 import { introspectionQuery, printSchema } from 'graphql/utilities';
 import { graphql } from 'graphql';
-import gulpGraphql from 'gulp-graphql';
+import schema from 'gulp-graphql';
 
-// You must initialize gulp-graphql by passing in `graphql`, `introspectionQuery`, and `printSchema`
-gulpGraphql.init(graphql, introspectionQuery, printSchema);
+// You must initialize gulp-graphql by passing
+// in `graphql`, `introspectionQuery`, and `printSchema`
+schema.init(graphql, introspectionQuery, printSchema);
 
 gulp.task("schema", () => {
   console.log("Generating graphql schema...");
 
   return gulp.src("src/data/schema.js")
-    .pipe(gulpGraphql({
+    .pipe(schema({
       json: true,
       graphql: false,
     }))
@@ -58,7 +59,7 @@ Passing in `graphql` via init is a hack that I'm not thrilled about but seems to
 
 ## Release log
 #### 0.1.0
-* Works for me to generate graphql `schema.json` and `schema.graphql` files.
+* Generates graphql `schema.json` and `schema.graphql` files w/ tests.
 
 ## Licence
 MIT License

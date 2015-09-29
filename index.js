@@ -5,9 +5,9 @@ var defaults = require('lodash.defaults');
 
 var _graphql, _introspectionQuery, _printSchema;
 
-// set local references for
+// set local references for graphql stuff
 generate.init = function (graphql, introspectionQuery, printSchema) {
-  _graphql = graphql;
+  _graphql = graphql && (graphql.graphql || graphql);
   _introspectionQuery = introspectionQuery;
   _printSchema = printSchema;
 }
